@@ -1,1 +1,0 @@
-# sesos-blueprint

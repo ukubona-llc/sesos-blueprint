@@ -1,0 +1,910 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ukubona — Sovereign Architecture</title>
+    <!-- Icons -->
+    <link rel="icon" href="https://abikesa.github.io/favicon/assets/favicon-light.ico" />
+    <link rel="icon" href="https://abikesa.github.io/favicon/assets/favicon-dark.ico"
+          media="(prefers-color-scheme: dark)" />
+
+    <!-- Logo preloads -->
+    <link rel="preload" href="https://abikesa.github.io/logos/assets/ukubona-light.png" as="image" />
+    <link rel="preload" href="https://abikesa.github.io/logos/assets/ukubona-dark.png" as="image" />
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap');
+
+  :root {
+    --ink: #0a0a08;
+    --paper: #f4f0e8;
+    --bone: #e8e2d4;
+    --rust: #b84c1a;
+    --gold: #c9943a;
+    --sage: #4a6741;
+    --slate: #3d4f5c;
+    --mist: #8fa3ae;
+    --ember: #e06c3a;
+    --signal: #1a6bb8;
+    --glow: rgba(201,148,58,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(244,240,232,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,240,232,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 64px;
+    border-bottom: 1px solid rgba(244,240,232,0.1);
+    padding-bottom: 32px;
+  }
+
+  .wordmark {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .wordmark h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 42px;
+    letter-spacing: -2px;
+    color: var(--paper);
+    line-height: 1;
+  }
+
+  .wordmark h1 span {
+    color: var(--gold);
+  }
+
+  .wordmark .subtitle {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14px;
+    color: var(--mist);
+    letter-spacing: 0.5px;
+  }
+
+  .version-badge {
+    background: rgba(201,148,58,0.15);
+    border: 1px solid rgba(201,148,58,0.3);
+    color: var(--gold);
+    padding: 6px 14px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── CORE PRINCIPLE ── */
+  .axiom {
+    background: rgba(244,240,232,0.03);
+    border-left: 3px solid var(--gold);
+    padding: 20px 28px;
+    margin-bottom: 56px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .axiom-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .axiom-text {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--paper);
+    font-weight: 300;
+  }
+
+  .axiom-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--mist);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(244,240,232,0.08);
+  }
+
+  /* ── DATA FLOW DIAGRAM ── */
+  .flow-diagram {
+    margin-bottom: 56px;
+    overflow-x: auto;
+  }
+
+  .flow-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: 900px;
+  }
+
+  .flow-node {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    position: relative;
+    cursor: default;
+    transition: all 0.2s;
+  }
+
+  .flow-node:hover .fn-inner { background: rgba(244,240,232,0.07); }
+
+  .fn-inner {
+    border: 1px solid rgba(244,240,232,0.12);
+    padding: 14px 10px;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .fn-inner.highlight { border-color: var(--gold); background: rgba(201,148,58,0.08); }
+  .fn-inner.accent { border-color: var(--rust); background: rgba(184,76,26,0.08); }
+  .fn-inner.sig { border-color: var(--sage); background: rgba(74,103,65,0.08); }
+
+  .fn-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--paper);
+    margin-bottom: 4px;
+  }
+
+  .fn-sub {
+    font-size: 10px;
+    color: var(--mist);
+    letter-spacing: 0.5px;
+  }
+
+  .flow-arrow {
+    color: rgba(244,240,232,0.2);
+    font-size: 18px;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── PENTADIC IDENTITY ── */
+  .pentadic-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    margin-bottom: 56px;
+  }
+
+  .pentad-level {
+    position: relative;
+    padding: 20px 16px;
+    border: 1px solid rgba(244,240,232,0.08);
+    cursor: default;
+    transition: all 0.25s;
+    overflow: hidden;
+  }
+
+  .pentad-level::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    transition: opacity 0.2s;
+    opacity: 0.6;
+  }
+
+  .pentad-level:nth-child(1)::before { background: var(--ember); }
+  .pentad-level:nth-child(2)::before { background: var(--gold); }
+  .pentad-level:nth-child(3)::before { background: var(--sage); }
+  .pentad-level:nth-child(4)::before { background: var(--signal); }
+  .pentad-level:nth-child(5)::before { background: var(--mist); }
+
+  .pentad-level:hover {
+    border-color: rgba(244,240,232,0.2);
+    background: rgba(244,240,232,0.03);
+    transform: translateY(-2px);
+  }
+
+  .pentad-num {
+    font-size: 10px;
+    color: var(--mist);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .pentad-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--paper);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .pentad-id {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  .pentad-alt {
+    font-size: 10px;
+    color: var(--mist);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* ── TWO COLUMN LAYOUT ── */
+  .cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 56px;
+  }
+
+  .cols-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 56px;
+  }
+
+  /* ── EVENT RECORD ── */
+  .card {
+    border: 1px solid rgba(244,240,232,0.1);
+    padding: 24px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--paper);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-gold { background: var(--gold); }
+  .dot-rust { background: var(--rust); }
+  .dot-sage { background: var(--sage); }
+  .dot-signal { background: var(--signal); }
+
+  /* ── NJSON DISPLAY ── */
+  .njson-block {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(244,240,232,0.06);
+    padding: 16px;
+    font-size: 11px;
+    line-height: 1.8;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .njson-block::before {
+    content: attr(data-file);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 9px;
+    color: var(--mist);
+    letter-spacing: 1px;
+  }
+
+  .jk { color: var(--mist); }
+  .jv-str { color: #a8cc8c; }
+  .jv-num { color: #d19a66; }
+  .jv-key { color: #61afef; }
+  .jv-special { color: var(--ember); }
+  .jv-sig { color: var(--sage); }
+
+  /* ── TECH STACK TABLE ── */
+  .stack-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+  }
+
+  .stack-table tr {
+    border-bottom: 1px solid rgba(244,240,232,0.06);
+    transition: background 0.15s;
+  }
+
+  .stack-table tr:hover { background: rgba(244,240,232,0.02); }
+  .stack-table tr:last-child { border-bottom: none; }
+
+  .stack-table td {
+    padding: 10px 8px;
+    vertical-align: top;
+  }
+
+  .stack-table td:first-child {
+    color: var(--mist);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: 120px;
+    white-space: nowrap;
+  }
+
+  .stack-table td:nth-child(2) {
+    color: var(--gold);
+    font-weight: 500;
+    width: 180px;
+  }
+
+  .stack-table td:last-child {
+    color: rgba(244,240,232,0.5);
+    font-size: 11px;
+  }
+
+  /* ── BUILD ORDER ── */
+  .build-list {
+    counter-reset: build;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .build-item {
+    counter-increment: build;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .build-item:hover {
+    border-color: rgba(244,240,232,0.1);
+    background: rgba(244,240,232,0.02);
+  }
+
+  .build-item::before {
+    content: counter(build, decimal-leading-zero);
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 500;
+    min-width: 24px;
+  }
+
+  .build-item .bi-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--paper);
+    flex: 1;
+  }
+
+  .build-item .bi-layer {
+    font-size: 10px;
+    color: var(--mist);
+    text-align: right;
+  }
+
+  /* ── CAPABILITY TOKEN ── */
+  .cap-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(26,107,184,0.15);
+    border: 1px solid rgba(26,107,184,0.3);
+    color: #7ab8e8;
+    padding: 3px 10px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    margin: 3px;
+  }
+
+  /* ── PROJECTION ENGINE ── */
+  .proj-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(244,240,232,0.05);
+  }
+
+  .proj-row:last-child { border-bottom: none; }
+
+  .proj-file {
+    color: var(--sage);
+    flex: 1;
+    font-size: 11px;
+  }
+
+  .proj-arrow { color: rgba(244,240,232,0.2); }
+
+  .proj-desc {
+    color: rgba(244,240,232,0.45);
+    font-size: 10px;
+    text-align: right;
+  }
+
+  /* ── GITHUB ACTIONS ── */
+  .action-pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 1px;
+  }
+
+  .ap-step {
+    flex: 1;
+    padding: 12px;
+    background: rgba(244,240,232,0.03);
+    border: 1px solid rgba(244,240,232,0.07);
+    text-align: center;
+  }
+
+  .ap-step .step-icon { font-size: 18px; margin-bottom: 6px; }
+  .ap-step .step-name { font-size: 10px; color: var(--paper); font-family: 'Syne', sans-serif; font-weight: 600; }
+  .ap-step .step-sub { font-size: 9px; color: var(--mist); margin-top: 2px; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(244,240,232,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--mist);
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+  .footer-right {
+    font-size: 10px;
+    color: rgba(244,240,232,0.2);
+    letter-spacing: 1px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .shell > * {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .shell > *:nth-child(1) { animation-delay: 0.05s; }
+  .shell > *:nth-child(2) { animation-delay: 0.1s; }
+  .shell > *:nth-child(3) { animation-delay: 0.15s; }
+  .shell > *:nth-child(4) { animation-delay: 0.2s; }
+  .shell > *:nth-child(5) { animation-delay: 0.25s; }
+  .shell > *:nth-child(6) { animation-delay: 0.3s; }
+  .shell > *:nth-child(7) { animation-delay: 0.35s; }
+  .shell > *:nth-child(8) { animation-delay: 0.4s; }
+  .shell > *:nth-child(9) { animation-delay: 0.45s; }
+  .shell > *:nth-child(10) { animation-delay: 0.5s; }
+
+  @media (max-width: 900px) {
+    .pentadic-grid { grid-template-columns: 1fr 1fr; }
+    .cols-2, .cols-3 { grid-template-columns: 1fr; }
+    .flow-track { min-width: 700px; }
+    header { flex-direction: column; gap: 16px; }
+    .axiom { flex-direction: column; gap: 12px; }
+    .axiom-eq { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <header>
+    <div class="wordmark">
+      <h1>Uku<span>bona</span></h1>
+      <div class="subtitle">Sovereign Event-Sourced Operating System</div>
+    </div>
+    <div class="version-badge">v0.1 · Architecture</div>
+  </header>
+
+  <!-- AXIOM -->
+  <div class="axiom">
+    <div class="axiom-label">Core Axiom</div>
+    <div class="axiom-text">Everything is an event. State is merely a projection of history.</div>
+    <div class="axiom-eq">State_t = Σ Events[0..t]</div>
+  </div>
+
+  <!-- DATA FLOW -->
+  <div class="section-title">System Data Flow</div>
+  <div class="flow-diagram">
+    <div class="flow-track">
+      <div class="flow-node">
+        <div class="fn-inner">
+          <div class="fn-label">Vite / React</div>
+          <div class="fn-sub">Passport · Ledger · Plugins</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-inner highlight">
+          <div class="fn-label">FastAPI</div>
+          <div class="fn-sub">JWT · RLS · Ingest</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-inner">
+          <div class="fn-label">Command API</div>
+          <div class="fn-sub">Auth · Plugins · Literature</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-inner accent">
+          <div class="fn-label">EventStore</div>
+          <div class="fn-sub">#.njson + hash chain</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-inner sig">
+          <div class="fn-label">Projections</div>
+          <div class="fn-sub">Rebuild from events</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-inner">
+          <div class="fn-label">GitHub / Render</div>
+          <div class="fn-sub">Actions · Permanence</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENTADIC IDENTITY -->
+  <div class="section-title">Nested Identity — Pentadic Model</div>
+  <div class="pentadic-grid">
+    <div class="pentad-level">
+      <div class="pentad-num">01 · BASE</div>
+      <div class="pentad-name">Sovereign Person</div>
+      <div class="pentad-id">ukb-spn-001</div>
+      <div class="pentad-alt">≈ Kindergarten</div>
+    </div>
+    <div class="pentad-level">
+      <div class="pentad-num">02</div>
+      <div class="pentad-name">Kin Network</div>
+      <div class="pentad-id">ukb-knn-001</div>
+      <div class="pentad-alt">≈ Primary</div>
+    </div>
+    <div class="pentad-level">
+      <div class="pentad-num">03</div>
+      <div class="pentad-name">EcoSystem</div>
+      <div class="pentad-id">ukb-eco-001</div>
+      <div class="pentad-alt">≈ Secondary</div>
+    </div>
+    <div class="pentad-level">
+      <div class="pentad-num">04</div>
+      <div class="pentad-name">Distributed Regulator</div>
+      <div class="pentad-id">ukb-drg-001</div>
+      <div class="pentad-alt">≈ University</div>
+    </div>
+    <div class="pentad-level">
+      <div class="pentad-num">05 · APEX</div>
+      <div class="pentad-name">Civilizational Planner</div>
+      <div class="pentad-id">ukb-cpl-001</div>
+      <div class="pentad-alt">≈ Research</div>
+    </div>
+  </div>
+
+  <!-- NJSON + JWT COLS -->
+  <div class="cols-2">
+
+    <!-- NJSON EVENT RECORD -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-rust"></span> TemporalEvent · #.njson Record</div>
+      <div class="njson-block" data-file="data/users/2026/ukb-cpl-001#.njson">
+<span class="jk">{</span><br>
+&nbsp;&nbsp;<span class="jv-key">"event_id"</span><span class="jk">:</span> <span class="jv-str">"evt-a3f9c2d1"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"timestamp"</span><span class="jk">:</span> <span class="jv-str">"2026-05-24T04:33:00+03:00"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"user_id"</span><span class="jk">:</span> <span class="jv-str">"ukb-cpl-001"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"nested_id"</span><span class="jk">: {</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"path"</span><span class="jk">:</span> <span class="jk">[</span><span class="jv-str">"cpl"</span><span class="jk">,</span><span class="jv-str">"drg"</span><span class="jk">,</span><span class="jv-str">"eco"</span><span class="jk">,</span><span class="jv-str">"knn"</span><span class="jk">,</span><span class="jv-str">"spn"</span><span class="jk">]</span><span class="jk">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"sovereign_person"</span><span class="jk">:</span> <span class="jv-str">"ukb-spn-001"</span><br>
+&nbsp;&nbsp;<span class="jk">},</span><br>
+&nbsp;&nbsp;<span class="jv-key">"action"</span><span class="jk">:</span> <span class="jv-str">"literature_ingested"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"data"</span><span class="jk">: {</span> <span class="jv-key">"prior_updated"</span><span class="jk">:</span> <span class="jv-special">true</span> <span class="jk">},</span><br>
+&nbsp;&nbsp;<span class="jv-key">"hash_prev"</span><span class="jk">:</span> <span class="jv-sig">"7f3a9c..."</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"hash_self"</span><span class="jk">:</span> <span class="jv-sig">"b2e4d1..."</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"signature"</span><span class="jk">:</span> <span class="jv-sig">"ed25519:4a8f..."</span><br>
+<span class="jk">}</span>
+      </div>
+    </div>
+
+    <!-- JWT CAPABILITY TOKEN -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-signal"></span> JWT Capability Token</div>
+      <div class="njson-block" data-file="POST /admin/issue-plugin-token">
+<span class="jk">{</span><br>
+&nbsp;&nbsp;<span class="jv-key">"sub"</span><span class="jk">:</span> <span class="jv-str">"ukb-spn-001"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"nested_path"</span><span class="jk">:</span> <span class="jk">[</span><span class="jv-str">"spn"</span><span class="jk">,</span><span class="jv-str">"knn"</span><span class="jk">]</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"capabilities"</span><span class="jk">: [</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-str">"plugin:literature:read"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-str">"plugin:course:write"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-str">"plugin:onboarding:execute"</span><br>
+&nbsp;&nbsp;<span class="jk">],</span><br>
+&nbsp;&nbsp;<span class="jv-key">"freemium"</span><span class="jk">:</span> <span class="jv-special">false</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"exp"</span><span class="jk">:</span> <span class="jv-num">1748736000</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"iss"</span><span class="jk">:</span> <span class="jv-str">"ukubona-admin"</span><br>
+<span class="jk">}</span>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:10px; color:var(--mist); margin-bottom:8px; letter-spacing:1px;">ACTIVE CAPABILITIES</div>
+        <span class="cap-token">plugin:literature:read</span>
+        <span class="cap-token">plugin:course:write</span>
+        <span class="cap-token">plugin:onboarding:execute</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTIONS + PLUGIN CONSTITUTION -->
+  <div class="cols-2">
+
+    <!-- PROJECTION ENGINE -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-sage"></span> Projection Engine</div>
+      <div style="font-size:10px; color:var(--mist); margin-bottom:14px;">Events are immutable. Projections are disposable. Delete → rebuild.</div>
+      <div class="proj-row">
+        <div class="proj-file">/projections/users.json</div>
+        <div class="proj-arrow">←</div>
+        <div class="proj-desc">account_created · password_changed</div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-file">/projections/plugin_access.json</div>
+        <div class="proj-arrow">←</div>
+        <div class="proj-desc">plugin_access_granted · token_issued</div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-file">/projections/literature_index.json</div>
+        <div class="proj-arrow">←</div>
+        <div class="proj-desc">literature_ingested · prior_updated</div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-file">/projections/cohort_graph.json</div>
+        <div class="proj-arrow">←</div>
+        <div class="proj-desc">all events by nested_id path</div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-file">/snapshots/ukb-cpl-001-0100.json</div>
+        <div class="proj-arrow">←</div>
+        <div class="proj-desc">every 100 events · fast replay</div>
+      </div>
+    </div>
+
+    <!-- PLUGIN CONSTITUTION -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-gold"></span> Plugin Constitution</div>
+      <div class="njson-block" data-file="literature-visualizer-v1">
+<span class="jk">{</span><br>
+&nbsp;&nbsp;<span class="jv-key">"plugin_id"</span><span class="jk">:</span> <span class="jv-str">"literature-v1"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;<span class="jv-key">"constitution"</span><span class="jk">: {</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"purpose"</span><span class="jk">:</span> <span class="jv-str">"ingest · summarize · graph"</span><span class="jk">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"allowed_tools"</span><span class="jk">:</span> <span class="jk">[</span><span class="jv-str">"pdf"</span><span class="jk">,</span><span class="jv-str">"llm"</span><span class="jk">,</span><span class="jv-str">"graph"</span><span class="jk">],</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"prompt_template"</span><span class="jk">:</span> <span class="jv-str">"Analyze literature re: {nested_id.level}..."</span><span class="jk">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"input_schema"</span><span class="jk">:</span> <span class="jk">{ </span><span class="jv-key">"type"</span><span class="jk">:</span> <span class="jv-str">"pdf|url|text"</span> <span class="jk">},</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-key">"output_schema"</span><span class="jk">:</span> <span class="jk">{ </span><span class="jv-key">"type"</span><span class="jk">:</span> <span class="jv-str">"graph_json|summary"</span> <span class="jk">}</span><br>
+&nbsp;&nbsp;<span class="jk">},</span><br>
+&nbsp;&nbsp;<span class="jv-key">"capability_required"</span><span class="jk">:</span> <span class="jv-str">"plugin:literature:read"</span><br>
+<span class="jk">}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECH STACK + BUILD ORDER -->
+  <div class="cols-2">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-mist" style="background:var(--mist)"></span> Tech Stack</div>
+      <table class="stack-table">
+        <tr><td>Backend</td><td>FastAPI + Uvicorn</td><td>Speed, Python ecosystem, async</td></tr>
+        <tr><td>Auth</td><td>PyJWT + Argon2</td><td>Stateless JWT, secure hashing</td></tr>
+        <tr><td>Storage</td><td>#.njson + SQLite idx</td><td>Permanence, audit, no vendor lock</td></tr>
+        <tr><td>Signatures</td><td>Ed25519 hash chain</td><td>Tamper evidence, legal defense</td></tr>
+        <tr><td>Frontend</td><td>Vite + React + TS</td><td>Fast dev, typed, modern</td></tr>
+        <tr><td>State</td><td>TanStack + Zustand</td><td>Server sync, global atoms</td></tr>
+        <tr><td>Visualization</td><td>react-force-graph</td><td>Literature knowledge graphs</td></tr>
+        <tr><td>Ingest</td><td>PyMuPDF + LLM API</td><td>PDF extraction, priors engine</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions → Render</td><td>Automated commit + deploy</td></tr>
+        <tr><td>Plugins</td><td>LLM Artifact Constitution</td><td>Standardized, sovereign GPTs</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot dot-gold"></span> Build Order — Shortest Path to Alive</div>
+      <ul class="build-list">
+        <li class="build-item"><span class="bi-name">NestedID</span><span class="bi-layer">models/identity.py</span></li>
+        <li class="build-item"><span class="bi-name">TemporalEvent</span><span class="bi-layer">models/events.py</span></li>
+        <li class="build-item"><span class="bi-name">EventStore.append()</span><span class="bi-layer">storage/njson_store.py</span></li>
+        <li class="build-item"><span class="bi-name">ProjectionEngine.rebuild()</span><span class="bi-layer">services/projections.py</span></li>
+        <li class="build-item"><span class="bi-name">Auth · JWT</span><span class="bi-layer">core/security.py</span></li>
+        <li class="build-item"><span class="bi-name">Password change + event</span><span class="bi-layer">api/auth.py</span></li>
+        <li class="build-item"><span class="bi-name">Plugin constitution loader</span><span class="bi-layer">api/plugins.py</span></li>
+        <li class="build-item"><span class="bi-name">React Passport page</span><span class="bi-layer">frontend · dashboard</span></li>
+        <li class="build-item"><span class="bi-name">Literature ingest pipeline</span><span class="bi-layer">services/literature.py</span></li>
+        <li class="build-item"><span class="bi-name">Synthetic prior engine</span><span class="bi-layer">services/priors.py</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- GITHUB ACTIONS PIPELINE -->
+  <div class="section-title">GitHub Actions Pipeline</div>
+  <div class="action-pipeline" style="margin-bottom: 56px;">
+    <div class="ap-step">
+      <div class="step-icon">✏️</div>
+      <div class="step-name">VSCode / Local</div>
+      <div class="step-sub">edit #.njson data</div>
+    </div>
+    <div style="display:flex;align-items:center;color:rgba(244,240,232,0.15);padding:0 4px;">→</div>
+    <div class="ap-step">
+      <div class="step-icon">📦</div>
+      <div class="step-name">git commit</div>
+      <div class="step-sub">asyncio.Lock() guard</div>
+    </div>
+    <div style="display:flex;align-items:center;color:rgba(244,240,232,0.15);padding:0 4px;">→</div>
+    <div class="ap-step">
+      <div class="step-icon">⬆️</div>
+      <div class="step-name">git push</div>
+      <div class="step-sub">pull --rebase first</div>
+    </div>
+    <div style="display:flex;align-items:center;color:rgba(244,240,232,0.15);padding:0 4px;">→</div>
+    <div class="ap-step">
+      <div class="step-icon">⚙️</div>
+      <div class="step-name">GitHub Actions</div>
+      <div class="step-sub">test · validate · sign</div>
+    </div>
+    <div style="display:flex;align-items:center;color:rgba(244,240,232,0.15);padding:0 4px;">→</div>
+    <div class="ap-step">
+      <div class="step-icon">🚀</div>
+      <div class="step-name">Render Deploy</div>
+      <div class="step-sub">FastAPI + static</div>
+    </div>
+    <div style="display:flex;align-items:center;color:rgba(244,240,232,0.15);padding:0 4px;">→</div>
+    <div class="ap-step">
+      <div class="step-icon">🔒</div>
+      <div class="step-name">Permanent Log</div>
+      <div class="step-sub">immutable · auditable</div>
+    </div>
+  </div>
+
+  <!-- RLS PRINCIPLE -->
+  <div class="card" style="margin-bottom: 56px; border-color: rgba(201,148,58,0.2);">
+    <div class="card-title"><span class="dot dot-gold"></span> RLS via Tree Inheritance</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center;">
+      <div class="njson-block">
+<span class="jv-key">can_read</span><span class="jk">(a, b) :=</span><br>
+&nbsp;&nbsp;<span class="jv-str">b.path</span> <span class="jv-special">⊆</span> <span class="jv-str">a.path</span><br><br>
+<span class="jk">// cpl-001 can read drg, eco, knn, spn</span><br>
+<span class="jk">// spn-001 can only read spn</span><br>
+<span class="jk">// Tree inheritance — no fixed role columns</span>
+      </div>
+      <div style="font-size: 12px; color: rgba(244,240,232,0.5); line-height: 1.8;">
+        Access control emerges from path containment, not role tables. A civilizational planner inherits read access to all nested levels. The sovereign person sees only their own leaf. Middleware checks path subset — no Postgres, no ACL tables, no vendor dependency.
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">You are building a civilizational memory machine.</div>
+    <div class="footer-right">UKUBONA · 2026-05-24 · v0.1 ARCHITECTURE</div>
+  </footer>
+
+</div>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
